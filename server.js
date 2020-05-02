@@ -25,8 +25,9 @@ app.get('/api/payment', function( req,res ){
         expiry: tmpData.expiry,
         cvv: tmpData.cvv };
 
-    console.log( `[POST /api/payment]`, paymentInfo )
-    res.send({ status: true, paymentInfo });
+    console.log( `[POST /api/payment]`, paymentInfo );
+    // 201 = created
+    res.status(201).send({ status: true, paymentInfo });
  });
  
  app.put('/api/payment', function( req,res ){
@@ -38,22 +39,27 @@ app.get('/api/payment', function( req,res ){
         expiry: tmpData.expiry,
         cvv: tmpData.cvv };
 
-    console.log( `[PUT /api/payment]`, paymentInfo )
-    res.send({ status: true, paymentInfo });
+    console.log( `[PUT /api/payment]`, paymentInfo );
+    // 202 = accepted
+    res.status(202).send({ status: true, paymentInfo });
  });
 
  app.delete('/api/payment', function( req,res ){
     paymentInfo = {}
 
     console.log( `[DELETE /api/payment]` )
-    res.send({ status: true, paymentInfo });
+    res.status(202).send({ status: true, paymentInfo });
  });
+
+ app.get('/api/*', function( req,res ){
+     res.status(400).send({ status: false})
+ })
 
  // to allow the react router paths, we must pass all
 // wildcard unknown URLs to react 
 app.get('/*', function (req, res) {
     console.log( `[/*] (${req.protocol}//${req.get('host')}/${req.originalUrl} -- sending file: ${__dirname}/client/build/index.html` );
-    res.sendFile(`${__dirname}/client/build/index.html`);
+    res.status(200).sendFile(`${__dirname}/client/build/index.html`);
  });
  
 

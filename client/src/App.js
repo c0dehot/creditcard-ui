@@ -10,7 +10,7 @@ function App() {
       <Router>
       <div className="App">
           <NavBar />
-          <div class="container">
+          <div className="container">
             <Route exact path={["/","/shoppingcart"]} component={ShoppingCartPage} />
             <Route exact path="/payment" component={PaymentPage} />
             </div>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import DatePicker from 'react-date-picker';
+import api from './utils/api';
 
 let priorPaymentInfoExists = false;
 
-function CreditCardPage(){
+function PaymentPage(){
     const [ form, setForm ]= useState( { name: '', number: '', expiry: '', cvv: '' } )
     const [ inputClass, setInputClass ] = useState( { name: '', number: '', expiry: '', cvv: '' } )
 
@@ -13,18 +14,12 @@ function CreditCardPage(){
     }, [] );
 
     async function loadPaymentDetails(){
-        const apiResult = await fetch( '/api/payment' ).then( result=>result.json() );
-
-        if( !apiResult.status ){
-            alert( 'Sorry something went wrong' );
-            return;
-        }
-
-        if( !apiResult.paymentInfo.name )
+        const apiResult = await api.get( '/api/payment' );
+        if( !apiResult || !apiResult.paymentInfo.name )
             return;
 
         priorPaymentInfoExists = true;
-        
+
         // convert date from string to date-object
         apiResult.paymentInfo.expiry = new Date( apiResult.paymentInfo.expiry );
         setForm( apiResult.paymentInfo );
@@ -32,7 +27,6 @@ function CreditCardPage(){
 
     function handleInputChange( e, regex='', len=0 ){
         let { id, value } = e.target
-        const validReg = new RegExp(`[^${regex}]+`).test(value)
         if( regex && new RegExp(`[^${regex}]+`).test(value) )
             return;
         // truncate to the length 
@@ -76,70 +70,64 @@ function CreditCardPage(){
             return;
 
         // save & notify the user
-        const apiResult = await fetch( '/api/payment',
-            {   method: priorPaymentInfoExists ? 'put' : 'post',
-                headers: {
-                    'Accept': 'application/json, text/plain, */*',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(form)
-            }
-            ).then( result=>result.json() );
+        const apiResult = await (priorPaymentInfoExists ? 
+            api.put( '/api/payment', form ): api.post( '/api/payment', form ) );
 
         if( !apiResult.status ){
             alert( 'Sorry something went wrong' );
             return;
         }
     
-        console.log( `[saveForm] VALID, saving data: `, form )
-        console.log( `[setFormValid] data: `, chkForm )
+        // console.log( `[saveForm] VALID, saving data: `, form )
+        // console.log( `[setFormValid] data: `, chkForm )
     }
     return (
-        <div class='container'>
+        <div className='container'>
             <h1>Payment Details</h1>
+
             <form>
-                <div class="form-group">
-                    <label for="name">Full Name</label>
+                <div className="form-group">
+                    <label htmlFor="name">Full Name</label>
                     <input onChange={(e)=>handleInputChange(e)} value={form.name} className={`form-control ${inputClass.name}`} id="name" type="text" placeholder="Jane John Doe" />
                     { inputClass.name==='is-invalid' ?
-                    <small id="nameHelp" class="text-danger">
+                    <small id="nameHelp" className="text-danger">
                         Your name must be at least 4 characters long.
                     </small> : ''}
                 </div>
-                <div class="form-group">
-                    <label for="number">Credit Card Number</label>
+                <div className="form-group">
+                    <label htmlFor="number">Credit Card Number</label>
                     <input onChange={(e)=>handleInputChange(e,'0-9',16)} value={form.number} className={`form-control ${inputClass.number}`} id="number" type="text" placeholder="4500 0000 0000 0000" />
                     { inputClass.number==='is-invalid' ?
-                    <small id="numberHelp" class="text-danger">
+                    <small id="numberHelp" className="text-danger">
                         This must be a valid 16 digit credit card number
                     </small> : ''}
                 </div>
-                <div class="form-row">
-                    <div class="form-group col-6">
-                        <label for="cardExpiry">Expiration</label>
+                <div className="form-row">
+                    <div className="form-group col-6">
+                        <label htmlFor="cardExpiry">Expiration</label>
                         <div className={`form-control ${inputClass.expiry}`}>
                             <DatePicker onChange={updateDate} value={form.expiry} id="expiry" minDate={new Date()} format='yyyy-MMM' />
                         </div>
                         { inputClass.expiry==='is-invalid' ?
-                        <small id="numberHelp" class="text-danger">
+                        <small id="numberHelp" className="text-danger">
                             Please enter an expiry date!
                         </small> : ''}
                     </div>
                   
-                    <div class="form-group col-6">
-                        <label for="ccExpiry">CVV</label>
+                    <div className="form-group col-6">
+                        <label htmlFor="ccCVV">CVV</label>
                         <input onChange={(e)=>handleInputChange(e,'0-9',3)} value={form.cvv} className={`form-control ${inputClass.cvv}`} id="cvv" type="text" placeholder="999" />
                         { inputClass.cvv==='is-invalid' ?
-                         <small id="numberHelp" class="text-danger">
-                            Your number your card's CVV (on the back)
+                         <small id="cvvHelp" className="text-danger">
+                            Your card's CVV is 3-digits and on the back
                         </small> : ''}
                     </div>
                                      
                 </div>
-                <button onClick={saveForm} type="button" class="btn btn-primary">Save CC</button>
+                <button onClick={saveForm} id='saveBtn' type="button" className="btn btn-primary">Save CC</button>
             </form>
         </div>
     )
 }
 
-export default CreditCardPage;
+export default PaymentPage;
