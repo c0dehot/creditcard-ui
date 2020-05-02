@@ -20,11 +20,14 @@ Currently none used, perhaps AirBnb rules?
 
 ## Development Mode
 Run the server from the root directory:
-npm start
+node server.js
 
 THEN we run the react code separately (from the client directory):
 cd client
 npm start
+
+Testing client with react jest:
+npm test
 
 ## Deployment Code & Production Usage
 To deploy, we have to build our react code with:

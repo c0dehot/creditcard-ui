@@ -49,7 +49,7 @@ afterAll(() => {
 
 
 it( 'renders mocked fetch result', async () => {
-    apiReturn = { status: true, paymentInfo: {name: "Test User", number: "0000-1111-2222-3333", cvv: "999", expiry: "01/04/2026"} };
+    apiReturn = { status: true, paymentInfo: {name: "Test User", number: "4500111122223333", cvv: "999", expiry: "01/04/2026"} };
 
     await act(async () => {
         render( <PaymentPage /> , container);
@@ -60,7 +60,7 @@ it( 'renders mocked fetch result', async () => {
     expect(formInputs[0].id).toContain('name');
     expect(formInputs[0].value).toContain('Test User');
     expect(formInputs[1].id).toContain('number');
-    expect(formInputs[1].value).toContain('0000-1111-2222-3333');
+    expect(formInputs[1].value).toContain('4500111122223333');
     //formInputs[2] is date-picker object
     expect(formInputs[3].id).toContain('cvv');
     expect(formInputs[3].value).toContain('999');
@@ -70,7 +70,7 @@ it( 'renders mocked fetch result', async () => {
 });
 
 it( 'submits form data (empty name)', async () => {
-    apiReturn = { status: true, paymentInfo: {name: "", number: "0000-1111-2222-3333", cvv: "999", expiry: "01/04/2026"} };
+    apiReturn = { status: true, paymentInfo: {name: "", number: "4500111122223333", cvv: "999", expiry: "01/04/2026"} };
     await act(async () => {
         render( <PaymentPage /> , container);
     })
@@ -89,7 +89,7 @@ it( 'submits form data (empty name)', async () => {
 });
 
 it( 'submits form data (invalid number)', async () => {
-    apiReturn = { status: true, paymentInfo: {name: "Test Name", number: "0000-1111-2222-3333", cvv: "999", expiry: "01/04/2026"} };
+    apiReturn = { status: true, paymentInfo: {name: "Test Name", number: "4500111122223333", cvv: "999", expiry: "01/04/2026"} };
     await act(async () => {
         render( <PaymentPage /> , container);
     })
